@@ -5,95 +5,96 @@ from CabWriter import CABFolderUnit
 from CabExtractor import CabExtractor
 import os
 from Utils import Utils
+import unittest
+
+class IntegrationTestcase(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_write_single_folder_multi_files_single_cab(self):
+        """
+        Single Folder - Multiple files - Single Cab
+        """
+        folder1 = CABFolderUnit()
+        folder1.name = "folder1"
+        folder1.filename_list = [r"./TestsFiles/pe101.jpg",
+                                 r"./TestsFiles/andy_C.mp3",
+                                 r"./TestsFiles/super_saiyajin.jpg"
+                                ]
+
+        manager = CABManager()
+        manager.create_cab(cab_folders=[folder1], cab_name="my_cab_[x].cab", cab_size=1474*1024*16)
+        manager.flush_cabset_to_disk(output_dir=r"./TestsFiles/")
+
+        # Perform in memory extraction
+        extractor = CabExtractor()
+        extractor.extract(r"./TestsFiles/my_cab_0.cab")
+
+        # Check hashes
+        extracted_hash_set = set([v for k, v in extractor.get_hashes_of_files().items()])
+        files_hash_set = set([v for k, v in Utils.get_hashes_of_files(folder1.filename_list).items()])
+
+        self.assertEquals(extracted_hash_set, files_hash_set)
+        # Cleanup
+        os.unlink(r"./TestsFiles/my_cab_0.cab")
 
 
-def write_single_folder_multi_files_single_cab():
-    """
-    Single Folder - Multiple files - Single Cab
-    """
-    folder1 = CABFolderUnit()
-    folder1.name = "folder1"
-    folder1.filename_list = [r"./TestsFiles/pe101.jpg",
-                             r"./TestsFiles/andy_C.mp3",
-                             r"./TestsFiles/super_saiyajin.jpg"
-                            ]
+    def test_write_multi_folder_multi_files_single_cab(self):
+        """
+        Multiple Folders - Multiple Files - Single Cab
+        """
+        folder1 = CABFolderUnit(name="folder1", filename_list=[r"./TestsFiles/pe101.jpg"])
+        folder2 = CABFolderUnit(name="folder2", filename_list=[r"./TestsFiles/andy_C.mp3"])
+        folder3 = CABFolderUnit(name="folder3", filename_list=[r"./TestsFiles/super_saiyajin.jpg"])
+        manager = CABManager()
+        manager.create_cab(cab_folders=[folder1, folder2, folder3],
+                          cab_name="my_cab_[x].cab",
+                          cab_size=1474*1024*16
+                          )
 
-    manager = CABManager()
-    manager.create_cab(cab_folders=[folder1], cab_name="my_cab_[x].cab", cab_size=1474*1024*16)
-    manager.flush_cabset_to_disk(output_dir=r"./TestsFiles/")
+        manager.flush_cabset_to_disk(output_dir=r"./TestsFiles/")
 
-    extractor = CabExtractor()
-    extracted_folder = extractor.extract(r"./TestsFiles/my_cab_0.cab")[0]
+        # Perform in memory extraction
+        extractor = CabExtractor()
+        extractor.extract(r"./TestsFiles/my_cab_0.cab")
 
-    # We need to remove the trailing null byte
-    for _ in xrange(len(extracted_folder.filename_list)):
-        extracted_folder.filename_list[_] = extracted_folder.filename_list[_][:-1]
+        # Check hashes
+        extracted_hash_set = set([v for k, v in extractor.get_hashes_of_files().items()])
+        files_hash_set = set([v for k, v in Utils.get_hashes_of_files(folder1.filename_list + folder2.filename_list + folder3.filename_list).items()])
 
-    # Check names and hashes
-    assert folder1 == extracted_folder
-    assert extractor.get_hashes_of_files() == Utils.get_hashes_of_files(folder1.filename_list)
+        self.assertEquals(extracted_hash_set, files_hash_set)
+        # Cleanup
+        os.unlink(r"./TestsFiles/my_cab_0.cab")
 
-    # Cleanup
-    os.unlink(r"./TestsFiles/my_cab_0.cab")
+    def test_write_multi_folder_multi_files_multi_cabs(self):
+        """
+        Multi folder - Multi files - Multi Cabs
+        """
 
+        folder1 = CABFolderUnit(name="folder1", filename_list=[r"./TestsFiles/pe101.jpg", r"./TestsFiles/andy_C.mp3"])
+        folder2 = CABFolderUnit(name="folder2", filename_list=[r"./TestsFiles/super_saiyajin.jpg"])
 
-def write_multi_folder_multi_files_single_cab():
-    """
-    Multiple Folders - Multiple Files - Single Cab
-    """
-    folder1 = CABFolderUnit(name="folder1", filename_list=[r"./TestsFiles/pe101.jpg"])
-    folder2 = CABFolderUnit(name="folder2", filename_list=[r"./TestsFiles/andy_C.mp3"])
-    folder3 = CABFolderUnit(name="folder3", filename_list=[r"./TestsFiles/super_saiyajin.jpg"])
-    manager = CABManager()
-    manager.create_cab(cab_folders=[folder1, folder2, folder3],
-                      cab_name="my_cab_[x].cab",
-                      cab_size=1474*1024*16
-                      )
+        manager = CABManager()
+        manager.create_cab(cab_folders=[folder1, folder2], cab_name="my_cab_[x].cab", cab_size=(1474*1024))
 
-    manager.flush_cabset_to_disk(output_dir=r"./TestsFiles/")
+        manager.flush_cabset_to_disk(output_dir=r"./TestsFiles/")
 
-    extractor = CabExtractor()
-    extracted_folder = extractor.extract(r"./TestsFiles/my_cab_0.cab")[0]
+        # Perform in memory extraction
+        extractor = CabExtractor()
+        extractor.extract(r"./TestsFiles/my_cab_0.cab")
 
-    # We need to remove the trailing null byte
-    # for _ in xrange(len(extracted_folder.filename_list)):
-    #     extracted_folder.filename_list[_] = extracted_folder.filename_list[_][:-1]
+        # Check hashes
+        extracted_hash_set = set([v for k, v in extractor.get_hashes_of_files().items()])
+        files_hash_set = set([v for k, v in Utils.get_hashes_of_files(folder1.filename_list + folder2.filename_list).items()])
 
-    # Check names and hashes
-    print extractor.get_hashes_of_files()
-    print Utils.get_hashes_of_files(folder1.filename_list + folder2.filename_list + folder3.filename_list)
-
-    assert extractor.get_hashes_of_files() == Utils.get_hashes_of_files(folder1.filename_list + folder2.filename_list + folder3.filename_list)
-    # Cleanup
-    os.unlink(r"./TestsFiles/my_cab_0.cab")
-
-def write_multi_folder_multi_files_multi_cabs():
-    """
-    Multi folder - Multi files - Multi Cabs
-    """
-
-    folder1 = CABFolderUnit(name="folder1", filename_list=[r"./TestsFiles/pe101.jpg", r"./TestsFiles/andy_C.mp3"])
-    folder2 = CABFolderUnit(name="folder2", filename_list=[r"./TestsFiles/super_saiyajin.jpg"])
-
-    manager = CABManager()
-    manager.create_cab(cab_folders=[folder1, folder2], cab_name="my_cab_[x].cab", cab_size=(1474*1024))
-
-    manager.flush_cabset_to_disk(output_dir=r"./TestsFiles/")
-
-    extractor = CabExtractor()
-    extracted_folder = extractor.extract(r"./TestsFiles/my_cab_0.cab")[0]
-
-    # We need to remove the trailing null byte
-    # for _ in xrange(len(extracted_folder.filename_list)):
-    #     extracted_folder.filename_list[_] = extracted_folder.filename_list[_][:-1]
-
-    # Check names and hashes
-    assert extractor.get_hashes_of_files() == Utils.get_hashes_of_files(folder1.filename_list + folder2.filename_list)
-    # Cleanup
-    os.unlink(r"./TestsFiles/my_cab_0.cab")
-    os.unlink(r"./TestsFiles/my_cab_1.cab")
-    os.unlink(r"./TestsFiles/my_cab_2.cab")
-    os.unlink(r"./TestsFiles/my_cab_3.cab")
+        # Check hashes
+        self.assertEquals(extracted_hash_set, files_hash_set)
+        # Cleanup
+        os.unlink(r"./TestsFiles/my_cab_0.cab")
+        os.unlink(r"./TestsFiles/my_cab_1.cab")
+        os.unlink(r"./TestsFiles/my_cab_2.cab")
+        os.unlink(r"./TestsFiles/my_cab_3.cab")
 
 def ReadCabinet():
     manager = CABManager()
@@ -119,8 +120,5 @@ def ReadCabinet():
 
 
 if __name__ == "__main__":
-
-    write_single_folder_multi_files_single_cab()
-    write_multi_folder_multi_files_single_cab()
-    write_multi_folder_multi_files_multi_cabs()
+    unittest.main()
     #ReadCabinet()
