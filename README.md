@@ -1,5 +1,6 @@
 # PyCAB
 [![Build Status](https://travis-ci.org/n3k/PyCAB.svg)](https://travis-ci.org/n3k/PyCAB)
+
 A Python library to manipulate Microsoft Cabinet files
 
 
