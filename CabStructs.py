@@ -1,3 +1,4 @@
+# coding=utf-8
 import struct
 import datetime
 from abc import ABCMeta, abstractmethod
