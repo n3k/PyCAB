@@ -1,9 +1,11 @@
 __author__ = 'n3k'
 
 import unittest
-from CabStructs import CFHEADER, CFFOLDER, CFFILE, CFDATA
 import random
 import datetime
+
+from pycab.CabStructs import CFHEADER, CFFOLDER, CFFILE, CFDATA
+
 
 class StructsTestCase(unittest.TestCase):
 

@@ -1,10 +1,7 @@
-__author__ = 'n3k'
-
-from CabManager import CABManager
-from CabWriter import CABFolderUnit
-from CabExtractor import CabExtractor
+from pycab.CabExtractor import CabExtractor, Utils
+from pycab.CabManager import CABManager
+from pycab.CabWriter import CABFolderUnit
 import os
-from Utils import Utils
 import unittest
 
 class IntegrationTestcase(unittest.TestCase):
