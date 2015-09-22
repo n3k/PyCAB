@@ -1,8 +1,7 @@
 # PyCAB
 [![Build Status](https://travis-ci.org/n3k/PyCAB.svg)](https://travis-ci.org/n3k/PyCAB)
-[![Latest Version](https://pypip.in/version/pycab/badge.svg)](https://pypi.python.org/pypi/pycab/)
-[![License](https://pypip.in/license/pycab/badge.svg)](https://pypi.python.org/pypi/pycab/)
-[![Downloads](https://pypip.in/download/pycab/badge.svg)](https://pypi.python.org/pypi/pycab/)
+[![Latest Version](https://img.shields.io/pypi/v/pycab.svg)](https://pypi.python.org/pypi/pycab/)
+[![Downloads](https://img.shields.io/pypi/dm/pycab.svg)](https://pypi.python.org/pypi/pycab/)
 
 A Python library to manipulate Microsoft Cabinet files
 
